@@ -3,6 +3,9 @@
 module AuthRails
   class Config
     class << self
+      attr_accessor :error_class,
+                    :resource_class
+
       def jwt
         yield Configuration::Jwt
       end

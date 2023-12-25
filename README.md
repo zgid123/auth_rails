@@ -1,0 +1,133 @@
+Simple authentication for rails.
+
+# Installation
+
+```sh
+gem 'auth_rails'
+```
+
+# Configuration
+
+```rb
+# config/initializers/auth_rails.rb
+
+AuthRails.configure do |config|
+  config.jwt do |jwt|
+    jwt.strategy = AuthRails::Strategies::AllowedTokenStrategy # default is AuthRails::Strategies::BaseStrategy
+
+    jwt.access_token do |access_token|
+      access_token.exp = 1.hour.since # optional
+      access_token.algorithm = 'HS256' # optional, default is HS256
+      access_token.secret_key = ENV.fetch('JWT_SECRET', 'secret_key') # optional
+    end
+
+    jwt.refresh_token do |refresh_token|
+      refresh_token.http_only = true # optional
+      refresh_token.exp = 1.year.since # optional
+      refresh_token.algorithm = 'HS256' # optional, must provide if project supports refresh token
+      refresh_token.cookie_key = :project_ref_tok # optional
+      refresh_token.secret_key = ENV.fetch('JWT_SECRET', 'secret_key') # optional
+    end
+  end
+end
+
+Rails.application.config.to_prepare do
+  AuthRails.configure do |config|
+    config.resource_class = User # required
+    config.error_class = ProjectError # optional
+  end
+end
+```
+
+# Usage
+
+```rb
+# config/routes.rb
+
+Rails.application.routes.draw do
+  namespace :api do
+    resource :auth, path: 'auth', controller: 'auth', only: %i[create] do
+      collection do
+        get :refresh
+      end
+    end
+  end
+end
+```
+
+```rb
+# app/controllers/application_controller.rb
+
+class ApplicationController < ActionController::API
+  # to include helpers for authenticating using access_token
+  include AuthRails::Authentication
+
+  # this action will assign user to CurrentAuth.user if valid token
+  # else raise error: AuthRails::Error or custom error in configuration
+  before_action :authenticate_user!
+end
+```
+
+```rb
+# app/controllers/api/auth_controller.rb
+
+module Api
+  class AuthController < AuthRails::Api::AuthController
+  end
+end
+```
+
+- If you want to support refresh token
+
+```rb
+# app/models/user.rb
+
+class User < ApplicationRecord
+  include AuthRails::Concerns::AllowedTokenStrategy
+end
+```
+
+# Customize
+
+- Custom Strategy
+
+```rb
+class CustomStrategy < AuthRails::Strategies::BaseStrategy
+  class << self
+    # this is for getting user/resource using payload from access_token
+    def retrieve_resource(payload:)
+      super
+    end
+
+    # this is for generating refresh token
+    # if you do not support refresh token, can ignore this one
+    def gen_token(resource:, payload:, exp: nil, secret_key: nil, algorithm: nil)
+      super
+    end
+  end
+end
+```
+
+- Custom response for controller
+
+```rb
+module Api
+  class AuthController < AuthRails::Api::AuthController
+    private
+
+    def respond_to_create(data)
+      render json: {
+        profile: CurrentAuth.user,
+        tokens: {
+          auth_token: data[:access_token],
+          refresh_token: data[:refresh_token]
+        }
+      }
+    end
+  end
+end
+```
+
+# License
+
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).

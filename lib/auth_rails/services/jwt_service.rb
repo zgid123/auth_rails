@@ -4,24 +4,36 @@ module AuthRails
   module Services
     class JwtService
       class << self
-        def gen_token(payload:, exp: nil)
-          exp ||= Configuration::Jwt.exp.to_i
+        def gen_token(payload:, exp: nil, secret_key: nil, algorithm: nil, jti: nil)
+          exp ||= Configuration::Jwt::AccessToken.exp.to_i
 
-          JWT.encode(payload, jwt_secret, algo, { exp: exp.to_i })
+          JWT.encode(
+            (payload || {}).merge(jti: jti || SecureRandom.hex(20)),
+            secret_key,
+            algo(algorithm),
+            {
+              exp: exp.to_i
+            }
+          )
         end
 
-        def verify_token(token:)
-          JWT.decode(token, jwt_secret, true, { algorithm: algo })[0]
+        def verify_token(token:, secret_key: nil, algorithm: nil)
+          JWT.decode(
+            token,
+            secret_key,
+            true,
+            {
+              algorithm: algo(algorithm)
+            }
+          )[0].deep_symbolize_keys
+        rescue StandardError
+          {}
         end
 
         private
 
-        def jwt_secret
-          @jwt_secret ||= Configuration::Jwt.secret_key
-        end
-
-        def algo
-          @algo ||= Configuration::Jwt.algorithm || 'HS256'
+        def algo(algorithm)
+          algorithm || Configuration::Jwt::AccessToken.algorithm
         end
       end
     end
