@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'jwt'
+
 require_relative 'auth_rails/config'
 require_relative 'auth_rails/version'
 require_relative 'auth_rails/class_methods'

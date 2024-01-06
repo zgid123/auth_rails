@@ -22,6 +22,11 @@ module AuthRails
 
         raise AuthRails.error_class, :unauthenticated if resource.blank?
 
+        resource.allowed_tokens.find_by(
+          jti: decoded_payload[:jti],
+          aud: decoded_payload[:aud]
+        )&.destroy!
+
         respond_to_refresh(generate_token(resource))
       end
 
