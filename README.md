@@ -6,7 +6,42 @@ Simple authentication for rails.
 gem 'auth_rails'
 ```
 
+# CLI
+
+- init `auth_rails`
+
+```sh
+rails g auth_rails
+```
+
+- init `auth_rails` with strategy
+
+```sh
+rails g auth_rails --strategy allowed_token
+```
+
+- create migration for `allowed_token` strategy
+
+```sh
+rails g auth_rails:migration --strategy allowed_token
+```
+
+- if your model is not User
+
+```sh
+rails g auth_rails:migration --strategy allowed_token --model CustomUser
+```
+
 # Configuration
+
+- User model must have `has_secure_password`
+
+```rb
+# app/models/user.rb
+class User < ApplicationRecord
+  has_secure_password
+end
+```
 
 ```rb
 # config/initializers/auth_rails.rb
@@ -84,6 +119,8 @@ end
 
 class User < ApplicationRecord
   include AuthRails::Concerns::AllowedTokenStrategy
+
+  has_secure_password
 end
 ```
 
@@ -127,6 +164,10 @@ module Api
   end
 end
 ```
+
+# Strategy list
+
+- allowed_token
 
 # License
 
