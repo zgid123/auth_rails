@@ -40,5 +40,5 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'jwt'
+  spec.add_runtime_dependency 'jwt', '>= 2.7'
 end
