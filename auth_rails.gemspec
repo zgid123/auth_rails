@@ -28,6 +28,7 @@ Gem::Specification.new do |spec|
             .git
             .circleci
             appveyor
+            examples/
             Gemfile
             .rubocop.yml
             .vscode/settings.json
