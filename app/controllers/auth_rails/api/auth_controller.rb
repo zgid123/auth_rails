@@ -4,7 +4,7 @@ module AuthRails
   module Api
     class AuthController < ApiController
       def create
-        resource = AuthRails.resource_class.find_by(email: params[:email])
+        resource = AuthRails.retrieve_resource(params: params)
 
         raise AuthRails.error_class, :unauthenticated if resource.blank? || !AuthRails.authenticate(resource: resource, password: params[:password])
 

@@ -183,7 +183,28 @@ Rails.application.config.to_prepare do
   AuthRails.configure do |config|
     config.resource_class = User # required
     config.identifier_name = :username # must be string or symbol, default is email
-    config.authenticate = ->(resource, password) { resource.password == password } # must be a proc
+    config.authenticate = ->(resource, password) { resource.password == password } # must be a proc, validate password
+  end
+end
+```
+
+- Sometimes, you have a complex logic to get the user
+
+```rb
+Rails.application.config.to_prepare do
+  AuthRails.configure do |config|
+    config.resource_class = User # required
+    config.identifier_name = :username # this one is sub in jwt
+    config.dig_params = ->(params) { params[:identifier] } # must be a proc, how to get identifier from params
+
+    # how to get user from identifier
+    # identifier default is params[<identifier_name>]
+    # or extract from dig_params
+    config.retrieve_resource = lambda { |identifier|
+      User.where(email: identifier)
+          .or(User.where(username: identifier))
+          .first
+    }
   end
 end
 ```
