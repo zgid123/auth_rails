@@ -1,5 +1,7 @@
 AllCops:
   TargetRubyVersion: 2.6
+  Exclude:
+    - "**/db/schema.rb"
 
 Style/StringLiterals:
   Enabled: true
@@ -10,7 +12,7 @@ Style/StringLiteralsInInterpolation:
   EnforcedStyle: single_quotes
 
 Layout/LineLength:
-  Max: 120
+  Max: 200
 
 Style/FrozenStringLiteralComment:
   Enabled: true
@@ -27,3 +29,9 @@ Metrics/MethodLength:
 
 Metrics/ParameterLists:
   Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Max: 15
+
+Metrics/PerceivedComplexity:
+  Max: 9
