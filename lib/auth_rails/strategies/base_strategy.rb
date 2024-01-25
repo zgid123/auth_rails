@@ -8,7 +8,7 @@ module AuthRails
           symbolized_payload = payload.symbolize_keys
 
           AuthRails.resource_class
-                   .find_by(email: symbolized_payload[:sub])
+                   .find_by(AuthRails.identifier_name => symbolized_payload[:sub])
         end
 
         def gen_token(payload:, exp: nil, secret_key: nil, algorithm: nil, jti: nil, **)

@@ -9,3 +9,4 @@ tmp/
 auth_rails-*.gem
 log
 .byebug_history
+storage
