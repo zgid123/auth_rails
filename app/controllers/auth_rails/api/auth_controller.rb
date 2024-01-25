@@ -6,7 +6,7 @@ module AuthRails
       def create
         resource = AuthRails.resource_class.find_by(email: params[:email])
 
-        raise AuthRails.error_class, :unauthenticated if resource.blank? || !resource.authenticate(params[:password])
+        raise AuthRails.error_class, :unauthenticated if resource.blank? || !AuthRails.authenticate(resource: resource, password: params[:password])
 
         respond_to_create(generate_token(resource))
       end
@@ -43,7 +43,7 @@ module AuthRails
 
       def payload(resource)
         {
-          sub: resource.email
+          sub: resource.send(AuthRails.identifier_name)
         }
       end
 

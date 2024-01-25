@@ -11,7 +11,7 @@ module AuthRails
                    .joins(:allowed_tokens)
                    .where(allowed_tokens: symbolized_payload.slice(:jti, :aud))
                    .where('allowed_tokens.exp > ?', Time.current)
-                   .find_by(email: symbolized_payload[:sub])
+                   .find_by(AuthRails.identifier_name => symbolized_payload[:sub])
         end
 
         def gen_token(resource:, payload:, exp: nil, secret_key: nil, algorithm: nil)

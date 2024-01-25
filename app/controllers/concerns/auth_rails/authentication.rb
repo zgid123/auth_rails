@@ -10,7 +10,7 @@ module AuthRails
         secret_key: Configuration::Jwt::AccessToken.secret_key
       )
 
-      CurrentAuth.user = AuthRails.resource_class.find_by(email: payload[:sub])
+      CurrentAuth.user = AuthRails.resource_class.find_by(AuthRails.identifier_name => payload[:sub])
 
       raise AuthRails.error_class, :unauthenticated unless CurrentAuth.user
     end

@@ -165,6 +165,29 @@ module Api
 end
 ```
 
+- In case your identifier is not email
+
+```rb
+Rails.application.config.to_prepare do
+  AuthRails.configure do |config|
+    config.resource_class = User # required
+    config.identifier_name = :username # must be string or symbol, default is email
+  end
+end
+```
+
+- If you have a custom method to validate password
+
+```rb
+Rails.application.config.to_prepare do
+  AuthRails.configure do |config|
+    config.resource_class = User # required
+    config.identifier_name = :username # must be string or symbol, default is email
+    config.authenticate = ->(resource, password) { resource.password == password } # must be a proc
+  end
+end
+```
+
 # Strategy list
 
 - allowed_token
