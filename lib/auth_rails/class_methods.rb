@@ -28,7 +28,7 @@ module AuthRails
 
     def authenticate(resource:, password:)
       if Config.authenticate.present?
-        raise 'Config.authenticate must be a Proc' unless Config.authenticate.is_a?(Proc)
+        raise_if_not_proc(Config.authenticate, 'Config.authenticate')
 
         Config.authenticate.call(resource, password)
       else
@@ -36,6 +36,34 @@ module AuthRails
 
         resource.authenticate(password)
       end
+    end
+
+    def dig_params(params:)
+      if Config.dig_params.present?
+        raise_if_not_proc(Config.dig_params, 'Config.dig_params')
+
+        Config.dig_params.call(params)
+      else
+        params[AuthRails.identifier_name]
+      end
+    end
+
+    def retrieve_resource(params:)
+      identifier = dig_params(params: params)
+
+      if Config.retrieve_resource.present?
+        raise_if_not_proc(Config.retrieve_resource, 'Config.retrieve_resource')
+
+        return Config.retrieve_resource.call(identifier)
+      end
+
+      AuthRails.resource_class.find_by(AuthRails.identifier_name => identifier)
+    end
+
+    private
+
+    def raise_if_not_proc(source, name)
+      raise "#{name} must be a Proc" unless source.is_a?(Proc)
     end
   end
 end

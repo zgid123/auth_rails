@@ -3,10 +3,12 @@
 module AuthRails
   class Config
     class << self
-      attr_accessor :error_class,
+      attr_accessor :dig_params,
+                    :error_class,
                     :authenticate,
                     :resource_class,
-                    :identifier_name
+                    :identifier_name,
+                    :retrieve_resource
 
       def jwt
         yield Configuration::Jwt
