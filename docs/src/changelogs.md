@@ -1,5 +1,11 @@
 # Changelogs
 
+## v1.1.2
+
+use AuthRails.retrieve_resource for authentication concerns
+
+**Full Changelog**: https://github.com/zgid123/auth_rails/compare/v1.1.1...v1.1.2
+
 ## v1.1.1
 
 add optional chaning when `identifier_name` is not provided from config
