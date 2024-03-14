@@ -15,7 +15,7 @@ module AuthRails
     end
 
     def identifier_name
-      @identifier_name ||= Config.identifier_name.to_sym || :email
+      @identifier_name ||= Config.identifier_name&.to_sym || :email
     end
 
     def error_class
